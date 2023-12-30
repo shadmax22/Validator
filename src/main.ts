@@ -203,41 +203,10 @@ function reversePath(keys: String[]): String {
   return keys.reduce((init: any, t, i) => {
     t = t.trim();
 
-    if (t.includes(" ")) {
+    if (t.includes(" ") || /^\d+$/.test(t)) {
       return init + `['${t}']`;
     } else {
       return init + `${i > 0 ? "." : ""}${t}`;
     }
   }, "");
 }
-
-// console.log(
-//   Validator({
-//     data: {
-//       green: "blue",
-//       blue: "pink",
-//       yellow: {
-//         greenx: "",
-//       },
-//       pink: {
-//         greenx: "red",
-//       },
-//     },
-
-//     required: ["green", "yellow.greenx"],
-//     rules: {
-//       "yellow.greenx": (v) => {
-//         return [false, "ERRROR IS " + v];
-//       },
-//     },
-//     // ignore: ["yellow.greenx"],
-//   })
-// );
-
-// Validator({
-//   data: {
-//     green: {
-//       red: "blue",
-//     },
-//   },
-// });
