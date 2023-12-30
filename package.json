@@ -1,9 +1,10 @@
 {
-  "name": "validator",
-  "private": true,
-  "version": "0.0.0",
+  "name": "key-validator",
+  "package-name": "key-validator",
+  "version": "1.0.0",
   "type": "module",
   "main": "src/main.ts",
+  "private": false,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -12,5 +13,9 @@
   "devDependencies": {
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Shad"
 }

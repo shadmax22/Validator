@@ -1,3 +1,94 @@
+export default function Validator(
+  params: {
+    data: string[];
+    required: string[];
+    ignore: string[];
+    rules: any;
+  } = {
+    data: [],
+    ignore: [],
+    required: [],
+    rules: [],
+  }
+): object {
+  const ERRORS: string[] = [];
+  const ERROR_MESSAGES: string[] = [];
+  let { data, required, ignore, rules } = params;
+
+  if (Object.keys(rules ?? []).length > 0) {
+    Object.keys(rules)
+      .filter((t) => !(ignore ?? []).includes(t))
+      .map((key: string) => {
+        const value = stringToObj(key, data);
+
+        let RE = rules[key](value);
+
+        if ((RE ?? 0).length == 2) {
+          // debugger;
+          if (RE[0] == false) {
+            ERRORS.push(key);
+            ERROR_MESSAGES.push(RE[1]);
+          }
+        } else {
+          console.error(
+            "Rules functions must return array length of 2 having [stat, errorMessage] format."
+          );
+        }
+      });
+  }
+
+  switch (true) {
+    case (required?.length ?? 0) > 0:
+      interface Accumulator {
+        stat: boolean;
+        errors: String[];
+        msg: String[];
+      }
+
+      let InitValue: Accumulator = {
+        stat: true,
+        errors: [...ERRORS],
+        msg: ERROR_MESSAGES,
+      };
+      let R = required.reduce((init: any, e) => {
+        if ((stringToObj(e, data) ?? "") == "" && !(ignore ?? []).includes(e)) {
+          init.stat = false;
+          if (!ERRORS.includes(e)) {
+            init.errors.push(e);
+          }
+
+          return init;
+        }
+        return init;
+      }, InitValue);
+
+      return R;
+      break;
+
+    case (ignore?.length ?? 0) >= 0:
+      let Validate: {
+        stat: boolean;
+        errors: string[];
+      } = Dig(data);
+
+      let ALL_ERRORS = [
+        ...ERRORS,
+        ...Validate.errors.filter((e) => !ERRORS.includes(e)),
+      ].filter((e: any) => {
+        return !(ignore ?? []).includes(e);
+      });
+
+      return {
+        stat: ALL_ERRORS.length == 0,
+        errors: ALL_ERRORS,
+        msg: ERROR_MESSAGES,
+      };
+      break;
+  }
+
+  return [];
+}
+
 function Dig(
   obj: any,
   innerCall = false,
@@ -9,7 +100,7 @@ function Dig(
 ) {
   let Keys = Object.keys(obj);
 
-  let R = Keys.map((i): any => {
+  Keys.map((i): any => {
     let RecordError = (BRANCHES: string[][] | any[]) => {
       DATA.stat = false;
 
@@ -118,97 +209,6 @@ function reversePath(keys: String[]): String {
       return init + `${i > 0 ? "." : ""}${t}`;
     }
   }, "");
-}
-
-export default function Validator(
-  params: {
-    data: string[];
-    required: string[];
-    ignore: string[];
-    rules: any;
-  } = {
-    data: [],
-    ignore: [],
-    required: [],
-    rules: [],
-  }
-): object {
-  const ERRORS: string[] = [];
-  const ERROR_MESSAGES: string[] = [];
-  let { data, required, ignore, rules } = params;
-
-  if (Object.keys(rules ?? []).length > 0) {
-    let A = Object.keys(rules)
-      .filter((t) => !(ignore ?? []).includes(t))
-      .map((key: string, i) => {
-        const value = stringToObj(key, data);
-
-        let RE = rules[key](value);
-
-        if ((RE ?? 0).length == 2) {
-          // debugger;
-          if (RE[0] == false) {
-            ERRORS.push(key);
-            ERROR_MESSAGES.push(RE[1]);
-          }
-        } else {
-          console.error(
-            "Rules functions must return array length of 2 having [stat, errorMessage] format."
-          );
-        }
-      });
-  }
-
-  switch (true) {
-    case (required?.length ?? 0) > 0:
-      interface Accumulator {
-        stat: boolean;
-        errors: String[];
-        msg: String[];
-      }
-
-      let InitValue: Accumulator = {
-        stat: true,
-        errors: [...ERRORS],
-        msg: ERROR_MESSAGES,
-      };
-      let R = required.reduce((init: any, e) => {
-        if ((stringToObj(e, data) ?? "") == "" && !(ignore ?? []).includes(e)) {
-          init.stat = false;
-          if (!ERRORS.includes(e)) {
-            init.errors.push(e);
-          }
-
-          return init;
-        }
-        return init;
-      }, InitValue);
-
-      return R;
-      break;
-
-    case (ignore?.length ?? 0) >= 0:
-      let Validate: {
-        stat: boolean;
-        errors: string[];
-      } = Dig(data);
-
-      let ALL_ERRORS = [
-        ...ERRORS,
-        ...Validate.errors.filter((e) => !ERRORS.includes(e)),
-      ].filter((e: any, i) => {
-        return !(ignore ?? []).includes(e);
-      });
-
-      return {
-        stat: ALL_ERRORS.length == 0,
-        errors: ALL_ERRORS,
-        msg: ERROR_MESSAGES,
-      };
-      break;
-  }
-
-  return [];
 }
 
 // console.log(
