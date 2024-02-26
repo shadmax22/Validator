@@ -1,7 +1,7 @@
 {
   "name": "key-validator",
   "package-name": "key-validator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "main": "src/main.ts",
   "private": false,
