@@ -31,7 +31,7 @@ export default function Validator(
           }
         } else {
           console.error(
-            "Rules functions must return array length of 2 having [stat, errorMessage] format."
+            "Rules functions must return array length of 2, having [stat, errorMessage] format."
           );
         }
       });
@@ -119,7 +119,7 @@ function Dig(
     let BRANCHES = [...BRANCH, i];
 
     if (typeof THIS_OBJ == "object") {
-      if (THIS_OBJ.length == 0) {
+      if ((THIS_OBJ?.length ?? Object.keys(THIS_OBJ)?.length) == 0) {
         RecordError(BRANCHES);
         return { stat: false, branch: BRANCHES };
       }
@@ -200,7 +200,7 @@ function stringToObj(path: any, data: object) {
 }
 
 function reversePath(keys: String[]): String {
-  return keys.reduce((init: any, t, i) => {
+  return keys.reduce((init: any, t: any, i) => {
     t = t.trim();
 
     if (t.includes(" ") || /^\d+$/.test(t)) {
