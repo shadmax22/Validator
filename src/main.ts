@@ -119,7 +119,7 @@ function Dig(
     let BRANCHES = [...BRANCH, i];
 
     if (typeof THIS_OBJ == "object") {
-      if ((THIS_OBJ?.length ?? Object.keys(THIS_OBJ)?.length) == 0) {
+      if ((THIS_OBJ?.length ?? Object.keys(THIS_OBJ ?? {})?.length) == 0) {
         RecordError(BRANCHES);
         return { stat: false, branch: BRANCHES };
       }
